@@ -1,7 +1,6 @@
 package com.example.applyexecutortoservice.infra.entity;
 
 import com.example.applyexecutortoservice.domain.chat.Chat;
-import com.example.applyexecutortoservice.domain.chat.ChatRoom;
 import jakarta.persistence.*;
 import lombok.Getter;
 
@@ -36,9 +35,9 @@ public class ChatEntity extends BaseTimeEntity {
     public Chat toModel() {
         return Chat.builder()
                 .id(id)
-                .chatRoom(userList)
-                .sender(name)
-                .message()
+                .chatRoom(chatRoom.toModel())
+                .sender(sender)
+                .message(message)
                 .build();
     }
 }

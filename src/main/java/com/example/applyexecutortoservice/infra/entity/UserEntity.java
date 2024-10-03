@@ -5,6 +5,9 @@ import com.example.applyexecutortoservice.domain.user.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.Getter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @Table(name = "users")
@@ -26,6 +29,9 @@ public class UserEntity extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UserRole userRole;
+
+    @OneToMany(mappedBy = "user")
+    private List<ChatRoomUserEntity> chatRoomUsers = new ArrayList<>();
 
     public static UserEntity from(User user) {
         UserEntity userEntity = new UserEntity();

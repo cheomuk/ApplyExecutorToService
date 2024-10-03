@@ -1,24 +1,25 @@
 package com.example.applyexecutortoservice.infra.entity;
 
 import com.example.applyexecutortoservice.domain.chat.ChatRoom;
+import com.example.applyexecutortoservice.domain.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Entity
-@Table(name = "chat_room")
+@Table(name = "chat_rooms")
 public class ChatRoomEntity extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_uid")
-    private List<UserEntity> userList = new ArrayList<>();
+    @OneToMany(mappedBy = "chatRoom")
+    private List<ChatRoomUserEntity> chatRoomUsers = new ArrayList<>();
 
     @Column
     private String name;
@@ -26,17 +27,21 @@ public class ChatRoomEntity extends BaseTimeEntity {
     public static ChatRoomEntity from(ChatRoom chatRoom) {
         ChatRoomEntity chatRoomEntity = new ChatRoomEntity();
         chatRoomEntity.id = chatRoom.getId();
-        chatRoomEntity.userList = chatRoom.getUserList();
         chatRoomEntity.name = chatRoom.getName();
 
         return chatRoomEntity;
     }
 
     public ChatRoom toModel() {
+        List<User> domainUsers = chatRoomUsers.stream()
+                .map(ChatRoomUserEntity::getUser)
+                .map(UserEntity::toModel)
+                .collect(Collectors.toList());
+
         return ChatRoom.builder()
                 .id(id)
-                .userList(userList)
                 .name(name)
+                .userList(domainUsers)
                 .build();
     }
 }
