@@ -22,7 +22,7 @@ public class ChatController {
     @Operation(summary = "실시간 채팅 저장 API")
     @MessageMapping("/chat")
     public void send(MessageStatusDto messageStatusDto) {
-        String str = chatService.saveMessage(messageStatusDto.getChatRoomId(), messageStatusDto);
+        String str = chatService.saveMessage(messageStatusDto);
 
         if (str.equals("ok")) {
             messagingTemplate.convertAndSend("/sub/" + messageStatusDto.getChatRoomId(), messageStatusDto);

@@ -18,7 +18,7 @@ public class ChatRoomEntity extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "chatRoom")
+    @OneToMany(mappedBy = "chatRoom", orphanRemoval = true)
     private List<ChatRoomUserEntity> chatRoomUsers = new ArrayList<>();
 
     @Column

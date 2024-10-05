@@ -15,7 +15,7 @@ public class MessageStatusDto {
     @Schema(description = "채팅방 ID")
     private Long chatRoomId;
 
-    @Schema(description = "보낸 사람")
+    @Schema(description = "보낸 사람 닉네임")
     private String sender;
 
     @Schema(description = "채팅 메시지")

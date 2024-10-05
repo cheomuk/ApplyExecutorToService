@@ -10,12 +10,17 @@ import java.util.List;
 public class ChatRoom {
 
     private final Long id;
-    private final String name;
-    private final List<User> userList;
+    private String name;
+    private List<User> userList;
 
     @Builder
     public ChatRoom(Long id, String name, List<User> userList) {
         this.id = id;
+        this.name = name;
+        this.userList = userList;
+    }
+
+    public void create(String name, List<User> userList) {
         this.name = name;
         this.userList = userList;
     }
