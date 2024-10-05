@@ -12,7 +12,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserJpaRepositoryImpl implements UserRepository {
 
-    private final UserJpaRepositoty userRepository;
+    private final UserJpaRepository userRepository;
 
     @Override
     public Optional<User> findByNickname(String nickname) {

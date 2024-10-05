@@ -3,11 +3,14 @@ package com.example.applyexecutortoservice.infra.entity;
 import com.example.applyexecutortoservice.domain.chat.Chat;
 import jakarta.persistence.*;
 import lombok.Getter;
+import org.springframework.data.annotation.CreatedDate;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Entity
 @Table(name = "chats")
-public class ChatEntity extends BaseTimeEntity {
+public class ChatEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,6 +25,9 @@ public class ChatEntity extends BaseTimeEntity {
 
     @Column
     private String message;
+
+    @CreatedDate
+    private LocalDateTime createdDate;
 
     public static ChatEntity from(Chat chat) {
         ChatEntity chatEntity = new ChatEntity();
@@ -38,6 +44,7 @@ public class ChatEntity extends BaseTimeEntity {
                 .chatRoom(chatRoom.toModel())
                 .sender(sender)
                 .message(message)
+                .dateTime(createdDate)
                 .build();
     }
 }
