@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Builder
 @NoArgsConstructor
@@ -20,4 +22,7 @@ public class MessageStatusDto {
 
     @Schema(description = "채팅 메시지")
     private String message;
+
+    @Schema(description = "보낸 시간")
+    private LocalDateTime dateTime;
 }

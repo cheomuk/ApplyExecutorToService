@@ -8,15 +8,15 @@ import com.example.applyexecutortoservice.dto.chat.MessageStatusDto;
 import com.example.applyexecutortoservice.infra.repository.RedisRepository;
 import com.example.applyexecutortoservice.service.user.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -26,11 +26,9 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     private final ChatRepository chatRepository;
     private final UserRepository userRepository;
     private final RedisRepository redisRepository;
-    private final ThreadPoolTaskExecutor taskExecutor;
 
     @Override
     @Transactional
-    @CacheEvict(value = "chatRoomList", allEntries = true)  // 새로운 채팅방이 생성되면 기존 캐시를 무효화
     public void createChatRoom(String name, List<String> userList) {
         List<User> lists = new ArrayList<>();
 
@@ -50,38 +48,32 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
     @Override
     @Cacheable(value = "chatRoomList", key = "#nickname", condition = "#page == 1")  // 페이지가 1이면 캐싱 처리
-    public List<ChatRoom> getChatRoomLists(String nickname, int page) {
+    public Page<ChatRoom> getChatRoomLists(String nickname, int page) {
+        Pageable pageable = PageRequest.of(page, 10);
+
         // 페이지가 2 이상일 경우 DB에서 조회
         if (page > 1) {
-            return chatRoomRepository.findByNicknameWithPaging(nickname, page);
+            return chatRoomRepository.findByNickname(nickname, pageable);
         }
 
         // Redis에서 채팅방 목록을 최신 메시지 순으로 가져옴
-        List<ChatRoom> chatRoomList = redisRepository.getChatRoomListSortedByLastMessage(nickname);
+        Page<ChatRoom> chatRoomList = redisRepository.getChatRoomListSortedByLastMessage(nickname, pageable);
 
         // 캐시에 없거나 빈 값이면 DB에서 가져와 Redis에 저장
         if (chatRoomList == null || chatRoomList.isEmpty()) {
-            chatRoomList = chatRoomRepository.getChatRoomListSortedByLastMessage(nickname, page);
+            chatRoomList = chatRoomRepository.findByNickname(nickname, pageable);
             redisRepository.saveChatRoom(nickname, chatRoomList);  // Redis에 채팅방 목록 캐싱
         }
         return chatRoomList;
     }
 
     @Override
+    @Cacheable(value = "messages", key = "'chatRoom-' + #chatRoomId")
     public List<MessageStatusDto> getMessages(Long chatRoomId) {
-        List<MessageStatusDto> messages = redisRepository.getMessages(chatRoomId);
-        if (messages == null || messages.isEmpty()) {
-            messages = chatRepository.findByChatRoomId(chatRoomId);
-            redisRepository.reassignToCacheMessages(messages);  // Redis에 캐시
-        }
+        List<MessageStatusDto> messages = chatRepository.findByChatRoomId(chatRoomId);
+        redisRepository.reassignToCacheMessages(messages);
 
         return messages;
-    }
-
-    @Cacheable(value = "lastMessage", key = "'chatRoom-' + #chatRoomId")  // 채팅방 마지막 메시지 캐싱
-    public String getLastMessage(Long chatRoomId) {
-        // 캐시에 없다면 DB에서 조회
-        return chatRepository.findLastMessageByChatRoomId(chatRoomId);
     }
 
     @Override

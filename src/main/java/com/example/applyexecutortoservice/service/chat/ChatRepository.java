@@ -10,7 +10,5 @@ public interface ChatRepository {
 
     List<MessageStatusDto> findByChatRoomId(Long chatRoomId);
 
-    String findLastMessageByChatRoomId(Long chatRoomId);
-
     void deleteByChatRoomId(Long chatRoomId);
 }

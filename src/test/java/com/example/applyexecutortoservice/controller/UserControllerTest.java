@@ -2,7 +2,6 @@ package com.example.applyexecutortoservice.controller;
 
 
 import com.example.applyexecutortoservice.dto.user.UserRequest;
-import com.example.applyexecutortoservice.service.user.UserRepository;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -31,9 +30,6 @@ public class UserControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    private UserRepository userRepository;
 
     @BeforeAll
     public static void setUp(@Autowired DataSource dataSource) {
