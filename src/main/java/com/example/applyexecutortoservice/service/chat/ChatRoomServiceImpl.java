@@ -64,6 +64,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
             chatRoomList = chatRoomRepository.findByNickname(nickname, pageable);
             redisRepository.saveChatRoom(nickname, chatRoomList);  // Redis에 채팅방 목록 캐싱
         }
+
         return chatRoomList;
     }
 
@@ -84,8 +85,8 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         redisRepository.leaveChatRoom(chatRoom, nickname);
 
         if (chatRoom.getUserList().size() - 1 <= 1) {
-            chatRoomRepository.deleteById(chatRoomId);
             chatRepository.deleteByChatRoomId(chatRoomId);
+            chatRoomRepository.deleteById(chatRoomId);
             redisRepository.removeChatRoom(chatRoomId);
         }
     }

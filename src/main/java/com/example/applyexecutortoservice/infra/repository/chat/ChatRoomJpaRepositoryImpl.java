@@ -3,10 +3,8 @@ package com.example.applyexecutortoservice.infra.repository.chat;
 import com.example.applyexecutortoservice.core.exception.ErrorCode;
 import com.example.applyexecutortoservice.core.exception.impl.NotFoundException;
 import com.example.applyexecutortoservice.domain.chat.ChatRoom;
-import com.example.applyexecutortoservice.dto.chat.MessageStatusDto;
 import com.example.applyexecutortoservice.infra.entity.*;
 import com.example.applyexecutortoservice.service.chat.ChatRoomRepository;
-import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -15,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Repository
@@ -22,6 +21,7 @@ import java.util.stream.Collectors;
 public class ChatRoomJpaRepositoryImpl implements ChatRoomRepository {
 
     private final ChatRoomJpaRepository chatRoomRepository;
+    private final ChatRoomUserJpaRepository chatRoomUserRepository;
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
@@ -54,20 +54,22 @@ public class ChatRoomJpaRepositoryImpl implements ChatRoomRepository {
                 .map(ChatRoomEntity::toModel)
                 .collect(Collectors.toList());
 
-        long total = jpaQueryFactory
-                .select(chatRoom)
-                .from(chatRoom)
-                .join(chatRoom.chatRoomUsers, chatRoomUser)
-                .join(chatRoomUser.user, user)
-                .where(user.nickname.eq(nickname))
-                .fetchCount();
+        Long total = Optional.ofNullable(
+                jpaQueryFactory
+                        .select(chatRoom.count())
+                        .from(chatRoom)
+                        .join(chatRoom.chatRoomUsers, chatRoomUser)
+                        .join(chatRoomUser.user, user)
+                        .where(user.nickname.eq(nickname))
+                        .fetchOne()
+        ).orElse(0L);
 
         return new PageImpl<>(chatRoomList, pageable, total);
     }
 
     @Override
     public void leave(Long chatRoomId, String nickname) {
-
+        chatRoomUserRepository.deleteByChatRoomIdAndUserNickname(chatRoomId, nickname);
     }
 
     @Override
