@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
-public class ChatRoomJpaRepositoryImpl implements ChatRoomRepository {
+public class ChatRoomRepositoryImpl implements ChatRoomRepository {
 
     private final ChatRoomJpaRepository chatRoomRepository;
     private final ChatRoomUserJpaRepository chatRoomUserRepository;

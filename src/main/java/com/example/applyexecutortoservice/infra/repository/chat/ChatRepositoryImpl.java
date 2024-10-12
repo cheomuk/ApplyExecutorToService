@@ -17,7 +17,7 @@ import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
-public class ChatJpaRepositoryImpl implements ChatRepository {
+public class ChatRepositoryImpl implements ChatRepository {
 
     private final ChatJpaRepository chatRepository;
     private final ChatRoomJpaRepository chatRoomRepository;
