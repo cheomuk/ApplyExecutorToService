@@ -19,7 +19,7 @@ public class UserController {
 
     private final UserService userService;
 
-    @Operation(summary = "회원가입 API")
+    @Operation(summary = "회원 가입 API")
     @PostMapping(value = "/signup")
     public ResponseEntity<String> signUp(UserRequest userRequest) {
         userService.signUp(userRequest);
