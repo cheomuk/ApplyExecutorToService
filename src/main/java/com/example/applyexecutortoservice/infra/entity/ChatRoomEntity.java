@@ -26,7 +26,6 @@ public class ChatRoomEntity extends BaseTimeEntity {
 
     public static ChatRoomEntity from(ChatRoom chatRoom) {
         ChatRoomEntity chatRoomEntity = new ChatRoomEntity();
-        chatRoomEntity.id = chatRoom.getId();
         chatRoomEntity.name = chatRoom.getName();
 
         return chatRoomEntity;

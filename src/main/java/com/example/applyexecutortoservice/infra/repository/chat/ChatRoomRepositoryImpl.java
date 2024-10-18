@@ -4,6 +4,7 @@ import com.example.applyexecutortoservice.core.exception.ErrorCode;
 import com.example.applyexecutortoservice.core.exception.impl.NotFoundException;
 import com.example.applyexecutortoservice.domain.chat.ChatRoom;
 import com.example.applyexecutortoservice.domain.chat.ChatRoomUser;
+import com.example.applyexecutortoservice.domain.user.User;
 import com.example.applyexecutortoservice.infra.entity.*;
 import com.example.applyexecutortoservice.service.chat.ChatRoomRepository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -39,20 +40,18 @@ public class ChatRoomRepositoryImpl implements ChatRoomRepository {
     @Override
     public Page<ChatRoom> findByNickname(String nickname, Pageable pageable) {
         QChatRoomEntity chatRoom = QChatRoomEntity.chatRoomEntity;
-        QChatEntity chat = QChatEntity.chatEntity;
         QChatRoomUserEntity chatRoomUser = QChatRoomUserEntity.chatRoomUserEntity;
         QUserEntity user = QUserEntity.userEntity;
 
-        // 유저가 포함된 채팅방 목록을 조회, 최근 채팅 순으로 정렬
         List<ChatRoomEntity> chatRooms = jpaQueryFactory
                 .select(chatRoom)
-                .from(chatRoomUser)
-                .join(chatRoomUser.chatRoom, chatRoom)
-                .join(chatRoomUser.user, user)
-                .join(chat).on(chat.chatRoom.eq(chatRoom))
+                .from(chatRoom)
+                .leftJoin(chatRoom.chatRoomUsers, chatRoomUser)
+                .leftJoin(chatRoomUser.user, user)
                 .where(user.nickname.eq(nickname))
+                .distinct()
                 .groupBy(chatRoom.id)
-                .orderBy(chat.createdDate.max().desc())  // 가장 최근 메시지 순으로 정렬
+                .orderBy(chatRoom.id.asc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -63,16 +62,17 @@ public class ChatRoomRepositoryImpl implements ChatRoomRepository {
 
         Long total = Optional.ofNullable(
                 jpaQueryFactory
-                        .select(chatRoom.count())
+                        .select(chatRoom.countDistinct())
                         .from(chatRoom)
-                        .join(chatRoom.chatRoomUsers, chatRoomUser)
-                        .join(chatRoomUser.user, user)
+                        .leftJoin(chatRoom.chatRoomUsers, chatRoomUser)
+                        .leftJoin(chatRoomUser.user, user)
                         .where(user.nickname.eq(nickname))
                         .fetchOne()
         ).orElse(0L);
 
         return new PageImpl<>(chatRoomList, pageable, total);
     }
+
 
     @Override
     public void leave(Long chatRoomId, String nickname) {

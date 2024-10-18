@@ -49,21 +49,23 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     @Override
     @Cacheable(value = "chatRoomList", key = "#nickname", condition = "#page == 1")  // 페이지가 1이면 캐싱 처리
     public Page<ChatRoom> getChatRoomLists(String nickname, int page) {
-        Pageable pageable = PageRequest.of(page, 10);
+        Pageable pageable = PageRequest.of(page - 1, 10);
 
         // 페이지가 2 이상일 경우 DB에서 조회
         if (page > 1) {
             return chatRoomRepository.findByNickname(nickname, pageable);
         }
 
-        // Redis에서 채팅방 목록을 최신 메시지 순으로 가져옴
-        Page<ChatRoom> chatRoomList = redisRepository.getChatRoomListSortedByLastMessage(nickname, pageable);
+//        // Redis에서 채팅방 목록을 최신 메시지 순으로 가져옴
+//        Page<ChatRoom> chatRoomList = redisRepository.getChatRoomListSortedByLastMessage(nickname, pageable);
+//
+//        // 캐시에 없거나 빈 값이면 DB에서 가져와 Redis에 저장
+//        if (chatRoomList == null || chatRoomList.isEmpty()) {
+//            chatRoomList = chatRoomRepository.findByNickname(nickname, pageable);
+//            redisRepository.saveChatRoom(nickname, chatRoomList);  // Redis에 채팅방 목록 캐싱
+//        }
 
-        // 캐시에 없거나 빈 값이면 DB에서 가져와 Redis에 저장
-        if (chatRoomList == null || chatRoomList.isEmpty()) {
-            chatRoomList = chatRoomRepository.findByNickname(nickname, pageable);
-            redisRepository.saveChatRoom(nickname, chatRoomList);  // Redis에 채팅방 목록 캐싱
-        }
+        Page<ChatRoom> chatRoomList = chatRoomRepository.findByNickname(nickname, pageable);
 
         return chatRoomList;
     }
