@@ -3,6 +3,7 @@ package com.example.applyexecutortoservice.infra.repository.chat;
 import com.example.applyexecutortoservice.core.exception.ErrorCode;
 import com.example.applyexecutortoservice.core.exception.impl.NotFoundException;
 import com.example.applyexecutortoservice.domain.chat.ChatRoom;
+import com.example.applyexecutortoservice.domain.chat.ChatRoomUser;
 import com.example.applyexecutortoservice.infra.entity.*;
 import com.example.applyexecutortoservice.service.chat.ChatRoomRepository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -26,7 +27,13 @@ public class ChatRoomRepositoryImpl implements ChatRoomRepository {
 
     @Override
     public void save(ChatRoom chatRoom) {
-        chatRoomRepository.save(ChatRoomEntity.from(chatRoom));
+        ChatRoomEntity chatRoomEntity = ChatRoomEntity.from(chatRoom);
+        chatRoomRepository.save(chatRoomEntity);
+
+        chatRoom.getUserList().forEach(user -> {
+            ChatRoomUser chatRoomUser = new ChatRoomUser(null, chatRoomEntity.toModel(), user);
+            chatRoomUserRepository.save(ChatRoomUserEntity.from(chatRoomUser));
+        });
     }
 
     @Override
@@ -39,10 +46,10 @@ public class ChatRoomRepositoryImpl implements ChatRoomRepository {
         // 유저가 포함된 채팅방 목록을 조회, 최근 채팅 순으로 정렬
         List<ChatRoomEntity> chatRooms = jpaQueryFactory
                 .select(chatRoom)
-                .from(chatRoom)
-                .join(chatRoom.chatRoomUsers, chatRoomUser)
+                .from(chatRoomUser)
+                .join(chatRoomUser.chatRoom, chatRoom)
                 .join(chatRoomUser.user, user)
-                .join(chat.chatRoom, chatRoom)
+                .join(chat).on(chat.chatRoom.eq(chatRoom))
                 .where(user.nickname.eq(nickname))
                 .groupBy(chatRoom.id)
                 .orderBy(chat.createdDate.max().desc())  // 가장 최근 메시지 순으로 정렬

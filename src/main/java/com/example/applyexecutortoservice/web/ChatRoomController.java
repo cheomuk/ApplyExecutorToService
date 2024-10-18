@@ -31,7 +31,7 @@ public class ChatRoomController {
 
     @Operation(summary = "참여 중인 채팅방 리스트 출력 API")
     @GetMapping("")
-    public Page<ChatRoom> getChatRoomLists(@RequestParam String nickname,
+    public Page<ChatRoom> getChatRoomLists(@RequestParam(value = "nickname") String nickname,
                                            @RequestParam(value = "page", defaultValue = "1") int page) {
         return chatRoomService.getChatRoomLists(nickname, page);
     }

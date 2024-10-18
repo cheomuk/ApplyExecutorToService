@@ -7,9 +7,11 @@ import lombok.Getter;
 @Getter
 public class User {
 
-    private final String uid;
-    private final String nickname;
-    private final UserRole userRole;
+    private String uid;
+    private String nickname;
+    private UserRole userRole;
+
+    public User() {}
 
     @Builder
     public User(String uid, String nickname, UserRole userRole) {

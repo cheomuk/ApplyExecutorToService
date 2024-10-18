@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,14 +22,14 @@ public class UserController {
 
     @Operation(summary = "회원 가입 API")
     @PostMapping(value = "/signup")
-    public ResponseEntity<String> signUp(UserRequest userRequest) {
+    public ResponseEntity<String> signUp(@RequestBody UserRequest userRequest) {
         userService.signUp(userRequest);
         return ResponseEntity.ok("회원가입이 완료되었습니다.");
     }
 
     @Operation(summary = "로그인 API")
     @PostMapping(value = "/login")
-    public UserResponse login(UserRequest userRequest) {
+    public UserResponse login(@RequestBody UserRequest userRequest) {
         return userService.login(userRequest);
     }
 }

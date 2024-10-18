@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,6 +54,10 @@ public class RedisRepository {
         int start = (int) pageable.getOffset();
         // 끝 인덱스 계산 (마지막 페이지에서는 리스트 크기와 맞추기)
         int end = Math.min((start + pageable.getPageSize()), chatRooms.size());
+
+        if (start > chatRooms.size()) {
+            return new PageImpl<>(Collections.emptyList(), pageable, chatRooms.size());
+        }
 
         // 리스트를 Page로 변환
         List<ChatRoom> pageContent = chatRooms.subList(start, end);
