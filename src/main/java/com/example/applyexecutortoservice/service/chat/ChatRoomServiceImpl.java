@@ -56,16 +56,14 @@ public class ChatRoomServiceImpl implements ChatRoomService {
             return chatRoomRepository.findByNickname(nickname, pageable);
         }
 
-//        // Redis에서 채팅방 목록을 최신 메시지 순으로 가져옴
-//        Page<ChatRoom> chatRoomList = redisRepository.getChatRoomListSortedByLastMessage(nickname, pageable);
-//
-//        // 캐시에 없거나 빈 값이면 DB에서 가져와 Redis에 저장
-//        if (chatRoomList == null || chatRoomList.isEmpty()) {
-//            chatRoomList = chatRoomRepository.findByNickname(nickname, pageable);
-//            redisRepository.saveChatRoom(nickname, chatRoomList);  // Redis에 채팅방 목록 캐싱
-//        }
+        // Redis에서 채팅방 목록을 최신 메시지 순으로 가져옴
+        Page<ChatRoom> chatRoomList = redisRepository.getChatRoomListSortedByLastMessage(nickname, pageable);
 
-        Page<ChatRoom> chatRoomList = chatRoomRepository.findByNickname(nickname, pageable);
+        // 캐시에 없거나 빈 값이면 DB에서 가져와 Redis에 저장
+        if (chatRoomList == null || chatRoomList.isEmpty()) {
+            chatRoomList = chatRoomRepository.findByNickname(nickname, pageable);
+            redisRepository.saveChatRoom(nickname, chatRoomList);  // Redis에 채팅방 목록 캐싱
+        }
 
         return chatRoomList;
     }
