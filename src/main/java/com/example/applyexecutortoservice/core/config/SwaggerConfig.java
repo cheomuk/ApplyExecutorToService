@@ -19,4 +19,42 @@ public class SwaggerConfig {
                 .addOpenApiCustomiser(api -> api.setInfo(info))
                 .build();
     }
+
+    @Bean
+    public GroupedOpenApi userApi() {
+        Info info = new Info().title("유저 & 인증/인가 API").version("v0.1");
+
+        return GroupedOpenApi.builder()
+                .group("users")
+                .pathsToMatch("/api/v1/users/**")
+                .displayName("Users and Authorization")
+                .addOpenApiCustomiser(api -> api.setInfo(info))
+                .build();
+    }
+
+    @Bean
+    public GroupedOpenApi storeApi() {
+        Info info = new Info().title("채팅룸 API").version("v0.1");
+        String[] paths = {"/api/v1/room/**"};
+
+        return GroupedOpenApi.builder()
+                .group("Chatting Room")
+                .pathsToMatch(paths)
+                .displayName("Chatting Room's API")
+                .addOpenApiCustomiser(api -> api.setInfo(info))
+                .build();
+    }
+
+    @Bean
+    public GroupedOpenApi supportApi() {
+        Info info = new Info().title("채팅 API").version("v0.1");
+        String[] paths = {"/ws/chat/**"};
+
+        return GroupedOpenApi.builder()
+                .group("Chatting")
+                .pathsToMatch(paths)
+                .displayName("Chatting API")
+                .addOpenApiCustomiser(api -> api.setInfo(info))
+                .build();
+    }
 }
