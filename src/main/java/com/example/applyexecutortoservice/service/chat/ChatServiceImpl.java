@@ -29,6 +29,7 @@ public class ChatServiceImpl implements ChatService {
                 chatRepository.save(messageStatusDto);
                 // Redis에 메시지 캐싱 (DB 저장 후 비동기로 처리)
                 redisRepository.saveMessage(messageStatusDto);
+                Logger.log("check message : " + messageStatusDto.getMessage());
             }, taskExecutor);
 
             future.join();  // 비동기 작업이 완료될 때까지 기다림

@@ -33,7 +33,7 @@ public class SwaggerConfig {
     }
 
     @Bean
-    public GroupedOpenApi storeApi() {
+    public GroupedOpenApi chatRoomApi() {
         Info info = new Info().title("채팅룸 API").version("v0.1");
         String[] paths = {"/api/v1/room/**"};
 
@@ -46,7 +46,7 @@ public class SwaggerConfig {
     }
 
     @Bean
-    public GroupedOpenApi supportApi() {
+    public GroupedOpenApi chatApi() {
         Info info = new Info().title("채팅 API").version("v0.1");
         String[] paths = {"/ws/chat/**"};
 
