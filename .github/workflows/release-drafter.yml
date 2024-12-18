@@ -22,7 +22,8 @@ jobs:
           # 기본 값
           BUMP_TYPE=""
 
-          # 라벨 가져오기
+          # 라벨 가져오기 (디버깅용 출력 추가)
+          echo "PR Labels: ${{ github.event.pull_request.labels.*.name }}"
           LABELS=$(echo "${{ github.event.pull_request.labels.*.name }}" | tr ',' '\n')
           
           # 우선순위: Major > Minor > Patch
@@ -32,6 +33,12 @@ jobs:
             BUMP_TYPE="minor"
           elif echo "$LABELS" | grep -q 'patch'; then
             BUMP_TYPE="patch"
+          fi
+
+          # BUMP_TYPE 확인
+          if [ -z "$BUMP_TYPE" ]; then
+            echo "No valid version bump labels found. Valid labels are: major, minor, patch."
+            exit 1
           fi
 
           echo "BUMP_TYPE=${BUMP_TYPE}" >> $GITHUB_ENV
