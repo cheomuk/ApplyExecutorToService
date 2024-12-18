@@ -1,6 +1,7 @@
 name-template: 'v$RESOLVED_VERSION 🌈'
 tag-template: 'v$RESOLVED_VERSION'
 commitish: main
+publish: true # 릴리즈를 자동으로 게시
 categories:
   - title: '🚀 Features'
     labels:
@@ -30,3 +31,4 @@ template: |
   ## Changes
 
   $CHANGES
+
