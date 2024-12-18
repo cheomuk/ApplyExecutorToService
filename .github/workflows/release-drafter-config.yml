@@ -10,7 +10,6 @@ categories:
   - title: '🐛 Bug Fixes'
     labels:
       - 'fix'
-      - 'bugfix'
       - 'bug'
   - title: '🧰 Maintenance'
     label: 'chore'
@@ -19,14 +18,16 @@ change-title-escapes: '\<*_&' # You can add # and @ to disable mentions, and add
 version-resolver:
   major:
     labels:
-      - 'major'
+      - 'enhancement'
   minor:
     labels:
-      - 'minor'
+      - 'feature'
   patch:
     labels:
-      - 'patch'
-  default: patch
+      - 'fix'
+      - 'bug'
+      - 'chore'
+  default: fix
 template: |
   ## Changes
 
