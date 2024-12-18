@@ -22,20 +22,26 @@ jobs:
           # 기본 값
           BUMP_TYPE=""
 
-          # 라벨 가져오기
-          LABELS=$(echo "${{ toJSON(github.event.pull_request.labels) }}" | jq -r '.[].name')
+          # 라벨 JSON 데이터 추출
+          RAW_LABELS="${{ toJSON(github.event.pull_request.labels) }}"
+          if [ -z "$RAW_LABELS" ] || [ "$RAW_LABELS" = "null" ]; then
+          RAW_LABELS="[]"
+          fi
           
-          # 라벨 디버깅 출력
-          echo "Extracted PR Labels: $LABELS"
-          
-          # 배열이 비어 있는지 확인
+          # 디버깅 출력
+          echo "Raw PR Labels JSON: $RAW_LABELS"
+      
+          # 라벨 추출
+          LABELS=$(echo "$RAW_LABELS" | jq -r '.[].name')
+      
+          # 라벨이 비어 있는지 확인
           if [ -z "$LABELS" ]; then
-            echo "No PR Labels found. The label array is empty."
+          echo "No PR Labels found. The label array is empty."
           else
-            echo "Listing all PR Labels:"
-            for label in $LABELS; do
-              echo "- $label"
-            done
+          echo "Listing all PR Labels:"
+          for label in $LABELS; do
+          echo "- $label"
+          done
           fi
           
           # 우선순위: Major > Minor > Patch
