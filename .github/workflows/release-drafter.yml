@@ -1,13 +1,18 @@
 name: draft-release
+
 on:
   pull_request:
     branches:
       - main
+    types:
+      - closed
 
-permissions: write-all
+
+permissions:
+  contents: read
 
 jobs:
-  build:
+  update_release_draft:
     if: github.event.pull_request.merged == true
     permissions:
       contents: write
