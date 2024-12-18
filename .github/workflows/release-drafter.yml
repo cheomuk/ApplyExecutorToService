@@ -23,14 +23,19 @@ jobs:
           BUMP_TYPE=""
 
           # 라벨 가져오기
-          LABELS=$(echo "${{ github.event.pull_request.labels.*.name }}" | tr ',' '\n')
-          echo "PR Labels: $LABELS"
+          LABELS=$(echo "${{ toJSON(github.event.pull_request.labels) }}" | jq -r '.[].name')
           
-          # 라벨이 비어 있는지 확인
+          # 라벨 디버깅 출력
+          echo "Extracted PR Labels: $LABELS"
+          
+          # 배열이 비어 있는지 확인
           if [ -z "$LABELS" ]; then
             echo "No PR Labels found. The label array is empty."
           else
-            echo "PR Labels are present."
+            echo "Listing all PR Labels:"
+            for label in $LABELS; do
+              echo "- $label"
+            done
           fi
           
           # 우선순위: Major > Minor > Patch
