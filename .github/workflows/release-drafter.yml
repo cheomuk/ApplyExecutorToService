@@ -30,8 +30,10 @@ jobs:
           if echo "$LABELS" | grep -q 'major'; then
             BUMP_TYPE="major"
           elif echo "$LABELS" | grep -q 'minor'; then
+            echo "check minor"
             BUMP_TYPE="minor"
           elif echo "$LABELS" | grep -q 'patch'; then
+            echo "check patch"
             BUMP_TYPE="patch"
           fi
 
