@@ -22,9 +22,9 @@ jobs:
           # 기본 값
           BUMP_TYPE=""
 
-          # 라벨 가져오기 (디버깅용 출력 추가)
-          echo "PR Labels: ${{ github.event.pull_request.labels.*.name }}"
+          # 라벨 가져오기
           LABELS=$(echo "${{ github.event.pull_request.labels.*.name }}" | tr ',' '\n')
+          echo "PR Labels: $LABELS"
           
           # 우선순위: Major > Minor > Patch
           if echo "$LABELS" | grep -q 'major'; then
