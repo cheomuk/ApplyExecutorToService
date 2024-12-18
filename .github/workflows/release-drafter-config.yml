@@ -27,7 +27,7 @@ version-resolver:
       - 'fix'
       - 'bug'
       - 'chore'
-  default: fix
+  default: patch
 template: |
   ## Changes
 
