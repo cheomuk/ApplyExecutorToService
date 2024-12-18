@@ -9,7 +9,8 @@ permissions: write-all
 jobs:
   build:
     if: >
-      github.event.pull_request.merged == true
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.head.ref == 'dev'
     permissions:
       contents: write
       pull-requests: write
