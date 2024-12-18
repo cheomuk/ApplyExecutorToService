@@ -26,6 +26,13 @@ jobs:
           LABELS=$(echo "${{ github.event.pull_request.labels.*.name }}" | tr ',' '\n')
           echo "PR Labels: $LABELS"
           
+          # 라벨이 비어 있는지 확인
+          if [ -z "$LABELS" ]; then
+            echo "No PR Labels found. The label array is empty."
+          else
+            echo "PR Labels are present."
+          fi
+          
           # 우선순위: Major > Minor > Patch
           if echo "$LABELS" | grep -q 'major'; then
             BUMP_TYPE="major"
