@@ -1,0 +1,73 @@
+name: draft-release
+on:
+  pull_request:
+    types: [closed]
+
+permissions: write-all
+
+jobs:
+  draft-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Git config
+        run: |
+          git config --global user.name "${GITHUB_ACTOR}"
+          git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+
+      - name: Determine version bump
+        id: determine_version
+        run: |
+          # 기본 값
+          BUMP_TYPE=""
+
+          # 라벨 가져오기
+          LABELS=$(echo "${{ github.event.pull_request.labels.*.name }}" | tr ',' '\n')
+          
+          # 우선순위: Major > Minor > Patch
+          if echo "$LABELS" | grep -q 'major'; then
+            BUMP_TYPE="major"
+          elif echo "$LABELS" | grep -q 'minor'; then
+            BUMP_TYPE="minor"
+          elif echo "$LABELS" | grep -q 'patch'; then
+            BUMP_TYPE="patch"
+          fi
+
+          echo "BUMP_TYPE=${BUMP_TYPE}" >> $GITHUB_ENV
+
+      - name: Apply version bump
+        run: |
+          if [ "${BUMP_TYPE}" == "major" ]; then
+            npm version major
+          elif [ "${BUMP_TYPE}" == "minor" ]; then
+            npm version minor
+          elif [ "${BUMP_TYPE}" == "patch" ]; then
+            npm version patch
+          else
+            echo "No valid version bump labels found."
+            exit 1
+          fi
+
+      - name: Read version
+        id: commit
+        uses: juliangruber/read-file-action@v1
+        with:
+            path: ./version.txt
+
+      - name: Push
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
+         
+
+      - name: Release drafter
+        uses: release-drafter/release-drafter@v5
+        if: ${{ steps.git_tag_check.outputs.tag == '' }}
+        with:
+          config-name: release-drafter-config.yml
+          version: 'v${{ (steps.commit.outputs.content) }}'
+          publish: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
